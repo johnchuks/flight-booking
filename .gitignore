@@ -1,0 +1,9 @@
+.DS_Store
+*-console.log
+
+*.pyc
+.python-version
+
+.env
+syntax_output
+.pytest_cache/
