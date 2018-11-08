@@ -5,7 +5,7 @@ class AirtechUserManager(UserManager):
 
     def _create_user(self, email, password, **extra_fields):
         """
-        Create and save a user with a email, and password.
+        create and save a user with a email, and password.
         """
         if not email:
             raise ValueError('Email must be set')
@@ -20,13 +20,13 @@ class AirtechUserManager(UserManager):
         extra_fields.setdefault('is_superuser', False)
         return self._create_user(email, password, **extra_fields)
 
-    def create_superuser(self, phone, email, password, **extra_fields):
+    def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
         if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
+            raise ValueError('superuser must have is_staff set to True.')
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
+            raise ValueError('superuser must have is_superuser set to True.')
 
         return self._create_user(email, password, **extra_fields)

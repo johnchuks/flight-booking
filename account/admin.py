@@ -12,7 +12,7 @@ class AirtechUser(UserAdmin):
     fieldsets = (
       (None, {'fields': ('email', 'password')}),
       (_('Personal info'), {'fields': ('first_name', 'last_name')}),
-      (_('Permissions'), {'fields': ('is_admin', 'is_superuser',)})
+      (_('Permissions'), {'fields': ('is_staff', 'is_superuser',)})
     )
 
     add_fieldsets = (
@@ -23,6 +23,6 @@ class AirtechUser(UserAdmin):
     )
     form = AirtechUserChangeForm
     add_form = AirtechUserChangeForm
-    list_display = ('id', 'email', 'first_name', 'last_name', 'is_admin')
+    list_display = ('id', 'email', 'first_name', 'last_name', 'is_staff')
     search_fields = ('first_name', 'last_name', 'email')
     ordering = ('first_name', 'last_name', 'email')

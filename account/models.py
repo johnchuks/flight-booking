@@ -15,7 +15,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = AirtechUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['email, first_name, last_name']
+    REQUIRED_FIELDS = ['first_name']
 
     
     def get_full_name(self):
