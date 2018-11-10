@@ -34,6 +34,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
+    'account',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,7 +54,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
 ROOT_URLCONF = 'config.urls'
+
+AUTH_USER_MODEL = 'account.User'
 
 TEMPLATES = [
     {
