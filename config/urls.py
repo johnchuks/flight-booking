@@ -26,10 +26,10 @@ api_v1 = [
     url(r'^', include(router.urls)),
     url(r'^signup/$', AirtechUserSignup.as_view(), name="sign_up"),
     url(r'^login/$', AirtechUserLogin.as_view(), name="login"),
-    url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls')),
 ]
 
 urlpatterns = [
     url(r'^api/v1/', include(api_v1)),
+    url(r'^admin/', admin.site.urls),
 ]

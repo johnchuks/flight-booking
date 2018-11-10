@@ -35,7 +35,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.is_staff
     
     def send_email(self, message):
-        
+        pass
+
 
 
 def get_user(pk):

@@ -35,3 +35,9 @@ class AirtechLoginSerializer(serializers.ModelSerializer):
 class JSONWebTokenSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=225)
 
+
+class FileUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'profile_photo') 
+

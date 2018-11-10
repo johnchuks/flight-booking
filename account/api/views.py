@@ -1,11 +1,13 @@
+from PIL import Image
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import ParseError
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework_jwt.settings import api_settings
 from account.models import User, get_user
@@ -13,8 +15,10 @@ from account.api.serializers import (
     CreateAirtechUserSerializer, 
     JSONWebTokenSerializer, 
     AirtechLoginSerializer,
-    AirtechUserSerializer
+    AirtechUserSerializer,
+    FileUploadSerializer
     )
+
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -113,6 +117,33 @@ class AirtechUserViewSet(viewsets.ViewSet):
         user.save()
         serializer = AirtechUserSerializer(user)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['put'])
+    def upload_photo(self, request):
+        try:
+            file = request.data.get('file')
+        except KeyError:
+            raise ParseError('Empty Content: No file attached')
+        user = request.user
+        user.profile_photo = file
+        user.save()
+        serializer = FileUploadSerializer(user)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['delete'])
+    def delete_photo(self, request):
+        user = request.user
+        user.profile_photo.delete(save=True)
+        response = dict(message="Photo deleted successfully")
+        return Response(response, status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+        
+       
+
+
 
 
 
