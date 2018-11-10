@@ -11,14 +11,14 @@ class AirtechUser(UserAdmin):
   
     fieldsets = (
       (None, {'fields': ('email', 'password')}),
-      (_('Personal info'), {'fields': ('first_name', 'last_name')}),
+      (_('Personal info'), {'fields': ('first_name', 'last_name', 'profile_photo')}),
       (_('Permissions'), {'fields': ('is_staff', 'is_superuser',)})
     )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('first_name', 'last_name', 'email', 'password'),
+            'fields': ('first_name', 'last_name', 'email', 'profile_photo'),
         }),
     )
     form = AirtechUserChangeForm
