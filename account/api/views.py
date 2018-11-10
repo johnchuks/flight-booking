@@ -128,7 +128,7 @@ class AirtechUserViewSet(viewsets.ViewSet):
         user.profile_photo = file
         user.save()
         serializer = FileUploadSerializer(user)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['delete'])
     def delete_photo(self, request):
