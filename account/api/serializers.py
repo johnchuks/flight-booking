@@ -3,6 +3,13 @@ from account.models import User
 
 
 class AirtechUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'email')
+
+
+
+class CreateAirtechUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User

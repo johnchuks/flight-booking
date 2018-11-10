@@ -4,3 +4,4 @@ python-dotenv==0.9.1
 djangorestframework==3.9.0
 Pillow==5.3.0
 djangorestframework-jwt==1.11.0
+sendgrid==5.6.0

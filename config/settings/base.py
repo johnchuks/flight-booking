@@ -148,6 +148,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+## SENDGRID SETTINGS
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 

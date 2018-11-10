@@ -17,10 +17,10 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 
-from account.api.views import AirtechUserSignup, AirtechUserLogin 
+from account.api.views import AirtechUserSignup, AirtechUserLogin, AirtechUserViewSet
 
 router = DefaultRouter()
-# router.register(r'user', AirtechUserViewSet, base_name='users')
+router.register(r'user', AirtechUserViewSet, base_name='users')
 
 api_v1 = [
     url(r'^', include(router.urls)),

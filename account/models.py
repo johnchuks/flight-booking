@@ -33,6 +33,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         Is the user an admin
         """
         return self.is_staff
+    
+    def send_email(self, message):
+        
 
 
 def get_user(pk):
