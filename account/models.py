@@ -15,7 +15,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = AirtechUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name']
+    REQUIRED_FIELDS = ['first_name', 'password']
 
     
     def get_full_name(self):
@@ -33,3 +33,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         Is the user an admin
         """
         return self.is_staff
+
+
+def get_user(pk):
+    try:
+        user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
+        return ("User does not exist")
+    return user
