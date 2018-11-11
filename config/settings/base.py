@@ -35,9 +35,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'djmoney',
+    'account',
+    'flight',
     'rest_framework_jwt',
     'rest_framework',
-    'account',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

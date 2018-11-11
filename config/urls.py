@@ -18,9 +18,12 @@ from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 
 from account.api.views import AirtechUserSignup, AirtechUserLogin, AirtechUserViewSet
+from flight.api.views import FlightViewSet, TicketViewSet
 
 router = DefaultRouter()
 router.register(r'user', AirtechUserViewSet, base_name='users')
+router.register(r'flight', FlightViewSet, base_name='flights')
+router.register(r'ticket', TicketViewSet, base_name='tickets')
 
 api_v1 = [
     url(r'^', include(router.urls)),
