@@ -8,14 +8,12 @@ class AirtechUserSerializer(serializers.ModelSerializer):
         fields = ('id', 'first_name', 'last_name', 'email')
 
 
-
 class CreateAirtechUserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         extra_kwargs = {'password': {'write_only': True}}
         fields = ('id', 'first_name', 'last_name', 'email', 'password')
-    
+
     def create(self, validated_data):
         password = validated_data.get('password')
         user = User.objects.create(**validated_data)
@@ -25,11 +23,9 @@ class CreateAirtechUserSerializer(serializers.ModelSerializer):
 
 
 class AirtechLoginSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'email')
-
 
 
 class JSONWebTokenSerializer(serializers.Serializer):
@@ -39,5 +35,4 @@ class JSONWebTokenSerializer(serializers.Serializer):
 class FileUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'profile_photo') 
-
+        fields = ('id', 'profile_photo')

@@ -35,6 +35,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'djmoney',
     'account',
     'flight',
     'rest_framework_jwt',

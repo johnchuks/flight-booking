@@ -7,3 +7,4 @@
 .env
 syntax_output
 .pytest_cache/
+.idea
