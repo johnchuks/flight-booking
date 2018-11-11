@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 
 from flight.api.serializers import FlightSerializer, TicketSerializer
 from flight.models import Flight, Ticket
-from flight.permissions import IsOwnerOrAdmin
+from flight.permissions import IsOwner
 # Create your views here.
 
 class FlightViewSet(viewsets.ModelViewSet):
@@ -42,54 +42,6 @@ class FlightViewSet(viewsets.ModelViewSet):
         serializer = FlightSerializer(flight)
         return Response(serializer.data, status=200)
 
-
-class TicketViewSet(viewsets.ModelViewSet):
-    queryset = Ticket.objects.all()
-    serializer_class = TicketSerializer
-
-    def get_permissions(self):
-        permission_classes = [IsAuthenticated,]
-        if self.action in ('create','list'):
-            permission_classes = [IsAdminUser]
-        if self.action == 'retrieve':
-            permission_classes = [IsOwnerOrAdmin]
-        return [permission() for permission in permission_classes]
-
-    @action(detail=True, methods=['patch'])
-    def book(self, request, pk=None):
-        queryset = Ticket.objects.all()
-        ticket = get_object_or_404(queryset, pk=pk)
-
-        if ticket.user != request.user:
-            response = dict(message="You are not authorized to book this ticket")
-            return Response(response, status=status.HTTP_401_UNAUTHORIZED)
-
-        if ticket.status in (Ticket.CONFIRMED, Ticket.BOOKED):
-            response = dict(message="This ticket has either been booked or purchased")
-            return Response(response, status=status.HTTP_403_FORBIDDEN)
-
-        ticket.status = Ticket.BOOKED
-        ticket.save()
-        serializer = TicketSerializer(ticket)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @action(detail=True, methods=['post'])
-    def purchase(self, request, pk=None):
-        current_user = request.user
-        queryset = Ticket.objects.all()
-        ticket = get_object_or_404(queryset, pk=pk)
-
-        if ticket.user != current_user:
-            response = dict(message="You are not authorized to purchase this ticket")
-            return Response(response, status=status.HTTP_401_UNAUTHORIZED)
-
-        if ticket.status == Ticket.BOOKED:
-            # run code for purchase ticket and send email to customer that ticket has been confirmed
-            ticket.status = Ticket.CONFIRMED
-            ticket.save()
-            serializer = TicketSerializer(ticket)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
     @action(detail=True, methods=['post'])
     def reserve_flight(self, request, pk=None):
         user = request.user
@@ -116,6 +68,54 @@ class TicketViewSet(viewsets.ModelViewSet):
         ## Run celery task to send email to customer of reserved ticket
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class TicketViewSet(viewsets.ModelViewSet):
+    queryset = Ticket.objects.all()
+    serializer_class = TicketSerializer
+
+    def get_permissions(self):
+        permission_classes = [IsAuthenticated,]
+        if self.action in ('create','list'):
+            permission_classes = [IsAdminUser]
+        if self.action == 'retrieve':
+            permission_classes = [IsOwner]
+        return [permission() for permission in permission_classes]
+
+    @action(detail=True, methods=['patch'])
+    def book(self, request, pk=None):
+        queryset = Ticket.objects.all()
+        ticket = get_object_or_404(queryset, pk=pk)
+
+        if ticket.user != request.user:
+            response = dict(message="You are not authorized to book this ticket")
+            return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+
+        if ticket.status in (Ticket.CONFIRMED, Ticket.BOOKED):
+            response = dict(message="This ticket has either been booked or purchased")
+            return Response(response, status=status.HTTP_403_FORBIDDEN)
+
+        ticket.status = Ticket.BOOKED
+        ticket.save()
+        serializer = TicketSerializer(ticket)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['patch'])
+    def purchase(self, request, pk=None):
+        current_user = request.user
+        queryset = Ticket.objects.all()
+        ticket = get_object_or_404(queryset, pk=pk)
+
+        if ticket.user != current_user:
+            response = dict(message="You are not authorized to purchase this ticket")
+            return Response(response, status=status.HTTP_401_UNAUTHORIZED)
+
+        if ticket.status == Ticket.BOOKED:
+            # run code for purchase ticket and send email to customer that ticket has been confirmed
+            ticket.status = Ticket.CONFIRMED
+            ticket.save()
+            serializer = TicketSerializer(ticket)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
     def update(self, request, *args, **kwargs):

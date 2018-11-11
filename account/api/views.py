@@ -61,7 +61,7 @@ class AirtechUserLogin(APIView):
         if email and password:
             user = authenticate(request, email=email, password=password)
         else:
-            msg = 'Must include a username and password to login'
+            msg = 'Must include an email and password to login'
             raise exceptions.ValidationError(msg)
         return user
 
@@ -83,7 +83,7 @@ class AirtechUserLogin(APIView):
                     'email': serializer.data.get('email')
                 }
                 return Response(response, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AirtechUserViewSet(viewsets.ViewSet):
