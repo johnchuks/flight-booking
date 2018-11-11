@@ -1,6 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.shortcuts import get_object_or_404
+from django.template.loader import get_template
+from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -100,7 +102,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['patch'])
+    @action(detail=True, methods=['post'])
     def purchase(self, request, pk=None):
         current_user = request.user
         queryset = Ticket.objects.all()
@@ -114,6 +116,23 @@ class TicketViewSet(viewsets.ModelViewSet):
             # run code for purchase ticket and send email to customer that ticket has been confirmed
             ticket.status = Ticket.CONFIRMED
             ticket.save()
+            subject = "Your E-ticket Itinerary"
+            context = dict(
+                name=ticket.user.first_name,
+                flight_number=ticket.flight.flight_number,
+                arrival_time=ticket.arrival_time,
+                arrival_date=ticket.arrival_date,
+                departure_time=ticket.departure_time,
+                departure_date=ticket.departure_date,
+                departure_location=ticket.departure_location,
+                arrival_location=ticket.arrival_location,
+                ticket_reference='8NDRTGF'
+            )
+            from_email='services@airtech.co'
+            to_email = 'johnboscoohia@gmail.com'
+            ticket_info = get_template('email.txt').render(context)
+            send_mail(subject, ticket_info, from_email, [to_email], fail_silently=True)
+
             serializer = TicketSerializer(ticket)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
