@@ -1,8 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.shortcuts import get_object_or_404
-from django.template.loader import get_template
-from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -10,6 +8,7 @@ from rest_framework.decorators import action
 from flight.api.serializers import FlightSerializer, TicketSerializer
 from flight.models import Flight, Ticket
 from flight.permissions import IsOwner
+from flight.tasks import notify_user_of_confirmed_ticket
 # Create your views here.
 
 class FlightViewSet(viewsets.ModelViewSet):
@@ -116,25 +115,12 @@ class TicketViewSet(viewsets.ModelViewSet):
             # run code for purchase ticket and send email to customer that ticket has been confirmed
             ticket.status = Ticket.CONFIRMED
             ticket.save()
-            subject = "Your E-ticket Itinerary"
-            context = dict(
-                name=ticket.user.first_name,
-                flight_number=ticket.flight.flight_number,
-                arrival_time=ticket.arrival_time,
-                arrival_date=ticket.arrival_date,
-                departure_time=ticket.departure_time,
-                departure_date=ticket.departure_date,
-                departure_location=ticket.departure_location,
-                arrival_location=ticket.arrival_location,
-                ticket_reference='8NDRTGF'
+            notify_user_of_confirmed_ticket.delay(
+                ticket.pk
             )
-            from_email='services@airtech.co'
-            to_email = 'johnboscoohia@gmail.com'
-            ticket_info = get_template('email.txt').render(context)
-            send_mail(subject, ticket_info, from_email, [to_email], fail_silently=True)
-
             serializer = TicketSerializer(ticket)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(dict(message="Ticket has been purchased for this flight"), status=400)
 
 
     def update(self, request, *args, **kwargs):
