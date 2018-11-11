@@ -12,6 +12,8 @@ class FlightSerializer(serializers.ModelSerializer):
                   )
 
 class TicketSerializer(serializers.ModelSerializer):
+    flight = FlightSerializer()
+
 
     class Meta:
         model = Ticket

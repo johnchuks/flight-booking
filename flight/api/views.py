@@ -43,7 +43,7 @@ class FlightViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=200)
 
     @action(detail=True, methods=['post'])
-    def reserve_flight(self, request, pk=None):
+    def reserve(self, request, pk=None):
         user = request.user
         try:
             flight = Flight.objects.get(pk=pk)
@@ -78,7 +78,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         permission_classes = [IsAuthenticated,]
         if self.action in ('create','list'):
             permission_classes = [IsAdminUser]
-        if self.action == 'retrieve':
+        if self.action in ('retrieve', 'destroy'):
             permission_classes = [IsOwner]
         return [permission() for permission in permission_classes]
 

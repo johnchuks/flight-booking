@@ -84,6 +84,8 @@ class AirtechUserLogin(APIView):
                 }
                 return Response(response, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        response = dict(message="Invalid request")
+        return Response(response, status=400)
 
 
 class AirtechUserViewSet(viewsets.ViewSet):
