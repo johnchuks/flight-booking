@@ -1,8 +1,11 @@
 from django.contrib import admin
-from account.models import User
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
-from account.forms import AirtechUserCreationForm, AirtechUserChangeForm
+
+from account.forms import AirtechUserChangeForm
+from account.models import User
+
+
 # Register your models here.
 
 @admin.register(User)

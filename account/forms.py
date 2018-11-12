@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import SetPasswordForm, PasswordResetForm, UserChangeForm
+from django.contrib.auth.forms import UserChangeForm
 
 from account.models import User
 
@@ -20,4 +20,3 @@ class AirtechUserChangeForm(UserChangeForm):
     class Meta:
         model = User
         fields = '__all__'
-

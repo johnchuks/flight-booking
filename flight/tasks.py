@@ -1,13 +1,16 @@
 from __future__ import absolute_import, unicode_literals
+
 from datetime import datetime, date
+
 from celery import shared_task
+from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import get_template
-from django.conf import settings
 
-from flight.models import Ticket
 from account.models import User
 from celery_app import app
+from flight.models import Ticket
+
 
 @shared_task()
 def notify_user_of_confirmed_ticket(ticket_id):
@@ -56,7 +59,6 @@ def notify_user_of_reservation(ticket_id):
     to_mail = reserved_ticket.user.email
     reservation_info = get_template('reserved.txt').render(context)
     send_mail(subject, reservation_info, from_email, [to_mail], fail_silently=True)
-
 
 
 @app.task

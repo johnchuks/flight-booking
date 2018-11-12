@@ -1,15 +1,17 @@
-from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.response import Response
+from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
 
 from flight.api.serializers import FlightSerializer, TicketSerializer
 from flight.models import Flight, Ticket
 from flight.permissions import IsOwner
 from flight.tasks import notify_user_of_confirmed_ticket, notify_user_of_reservation
 from flight.utils import convert_date_to_unix
+
+
 # Create your views here.
 
 class FlightViewSet(viewsets.ModelViewSet):
@@ -20,7 +22,7 @@ class FlightViewSet(viewsets.ModelViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        permission_classes = [IsAuthenticated,]
+        permission_classes = [IsAuthenticated, ]
         if self.action in ('create', 'destroy', 'update',
                            'partial_update', 'flight_status'):
             permission_classes = [IsAdminUser]
@@ -127,14 +129,13 @@ class FlightViewSet(viewsets.ModelViewSet):
         return Response(response, status=status.HTTP_200_OK)
 
 
-
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
 
     def get_permissions(self):
-        permission_classes = [IsAuthenticated,]
-        if self.action in ('create','list'):
+        permission_classes = [IsAuthenticated, ]
+        if self.action in ('create', 'list'):
             permission_classes = [IsAdminUser]
         if self.action in ('retrieve', 'destroy'):
             permission_classes = [IsOwner]
