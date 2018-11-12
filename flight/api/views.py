@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from flight.api.serializers import FlightSerializer, TicketSerializer
 from flight.models import Flight, Ticket
 from flight.permissions import IsOwner
-from flight.tasks import notify_user_of_confirmed_ticket
+from flight.tasks import notify_user_of_confirmed_ticket, notify_user_of_reservation
 # Create your views here.
 
 class FlightViewSet(viewsets.ModelViewSet):
@@ -66,9 +66,42 @@ class FlightViewSet(viewsets.ModelViewSet):
             arrival_location=flight.arrival_location
         )
         ticket.save()
-        ## Run celery task to send email to customer of reserved ticket
+        # Run celery task to send email to customer of reserved ticket
+        notify_user_of_reservation.delay(
+            ticket.pk
+        )
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def book(self, request, pk=None):
+        queryset = Flight.objects.all()
+        flight = get_object_or_404(queryset, pk=pk)
+        ticket = Ticket.objects.filter(user=request.user, flight=flight).exclude(
+            status__in=(
+                Ticket.RESERVED
+            ))
+        if ticket.exists():
+            response = dict(
+                message="A ticket has either been booked or confirmed for this flight"
+            )
+            return Response(response, status=400)
+
+        ticket = Ticket.objects.create(
+            user=request.user,
+            flight=flight,
+            arrival_time=flight.arrival_time,
+            arrival_date=flight.arrival_date,
+            departure_time=flight.departure_time,
+            departure_date=flight.departure_date,
+            departure_location=flight.departure_location,
+            arrival_location=flight.arrival_location,
+            status=Ticket.BOOKED
+        )
+        ticket.save()
+        serializer = TicketSerializer(ticket)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -122,7 +155,6 @@ class TicketViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(dict(message="Ticket has been purchased for this flight"), status=400)
 
-
     def update(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
         queryset = Ticket.objects.all()
@@ -146,7 +178,6 @@ class TicketViewSet(viewsets.ModelViewSet):
                 setattr(ticket, key, value)
 
             ticket.save()
-            ## Send email of ticket updated
             serializer = TicketSerializer(ticket)
             return Response(serializer.data, status=status.HTTP_200_OK)
 

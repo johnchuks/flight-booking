@@ -4,13 +4,15 @@ Your Booking Reference is {{ ticket_reference }}
 Hello {{ name }},
 
 
-Thanks for choosing to book with Airtech.ng.
+Thanks for choosing to book with Airtechng.
 Attached to this mail you will find your E-ticket Itinerary Receipt
 
-Your TICKET INFORMATION
 
 
-Flight Number:{{ flight_number }}
+YOUR TICKET INFORMATION
+
+
+Flight Number: {{ flight_number }}
 
 
 From: {{ departure_location }}
