@@ -9,6 +9,7 @@ from flight.api.serializers import FlightSerializer, TicketSerializer
 from flight.models import Flight, Ticket
 from flight.permissions import IsOwner
 from flight.tasks import notify_user_of_confirmed_ticket, notify_user_of_reservation
+from flight.utils import convert_date_to_unix
 # Create your views here.
 
 class FlightViewSet(viewsets.ModelViewSet):
@@ -20,7 +21,8 @@ class FlightViewSet(viewsets.ModelViewSet):
         Instantiates and returns the list of permissions that this view requires.
         """
         permission_classes = [IsAuthenticated,]
-        if self.action in ('create', 'destroy', 'update', 'partial_update', 'flight_status'):
+        if self.action in ('create', 'destroy', 'update',
+                           'partial_update', 'flight_status'):
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
@@ -101,6 +103,28 @@ class FlightViewSet(viewsets.ModelViewSet):
         ticket.save()
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'], url_path='reserved/(?P<date>[0-9_-]+)')
+    def reserved(self, request, pk=None, date=None):
+        queryset = Flight.objects.all()
+        flight = get_object_or_404(queryset, pk=pk)
+
+        reserved_tickets = flight.tickets.filter(
+            status=Ticket.CONFIRMED,
+        )
+        date_to_timestamp = convert_date_to_unix(date)
+
+        tickets = [
+            ticket for ticket in reserved_tickets
+            if convert_date_to_unix(ticket.created_at.strftime('%Y-%m-%d')) == date_to_timestamp
+        ]
+
+        serializer = TicketSerializer(tickets, many=True)
+        response = {
+            "reservations": serializer.data,
+            "reservations_count": len(tickets)
+        }
+        return Response(response, status=status.HTTP_200_OK)
 
 
 

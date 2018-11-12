@@ -14,6 +14,8 @@ import os
 from dotenv import load_dotenv
 from datetime import timedelta
 
+from celery.schedules import crontab
+
 # Load .env file
 load_dotenv()
 
@@ -35,6 +37,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_celery_beat',
     'djmoney',
     'account',
     'flight',
@@ -167,6 +170,12 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Africa/Lagos'
+CELERY_BEAT_SCHEDULE = {
+    'send-email-reminder': {
+        'task': 'flight.tasks.send_reminder_to_travellers',
+        'schedule': crontab(minute='*')
+    }
+}
 
 
 # Internationalization
