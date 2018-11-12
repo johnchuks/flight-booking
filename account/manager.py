@@ -1,5 +1,6 @@
 from django.contrib.auth.models import UserManager
 
+
 class AirtechUserManager(UserManager):
     use_in_migrations = True
 

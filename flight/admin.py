@@ -1,5 +1,7 @@
 from django.contrib import admin
+
 from flight.models import Flight, Ticket
+
 
 # Register your models here.
 @admin.register(Flight)

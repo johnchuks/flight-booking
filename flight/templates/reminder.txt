@@ -1,0 +1,34 @@
+
+Hello {{ name }},
+
+
+Thank you for choosing Airtechng.
+
+This is a reminder for your flight with booking reference {{ ticket_reference }}
+scheduled to take off tomorrow {{ departure_date }} by {{ departure_time }}
+
+
+
+
+YOUR TICKET INFORMATION
+
+
+Flight Number: {{ flight_number }}
+
+
+From: {{ departure_location }}
+
+
+To: {{ arrival_location }}
+
+
+Arrival Date: {{ arrival_date}}
+
+
+Arrival Time: {{ arrival_time }}
+
+
+Departure Date:{{ departure_date }}
+
+
+Departure Time: {{ departure_time }}

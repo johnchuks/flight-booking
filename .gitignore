@@ -8,3 +8,5 @@
 syntax_output
 .pytest_cache/
 .idea
+celerybeat.*
+celerybeat-*

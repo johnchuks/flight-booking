@@ -14,6 +14,8 @@ import os
 from dotenv import load_dotenv
 from datetime import timedelta
 
+from celery.schedules import crontab
+
 # Load .env file
 load_dotenv()
 
@@ -35,6 +37,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_celery_beat',
     'djmoney',
     'account',
     'flight',
@@ -150,8 +153,29 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-## SENDGRID SETTINGS
+# SENDGRID SETTINGS
+
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = os.getenv('SENDGRID_USERNAME')
+EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_PASSWORD')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+AIRTECH_MAIL = os.getenv('AIRTECH_MAIL')
+
+ #CELERY SETTINGS
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Africa/Lagos'
+CELERY_BEAT_SCHEDULE = {
+    'send-email-reminder': {
+        'task': 'flight.tasks.send_reminder_to_travellers',
+        'schedule': crontab(minute='*')
+    }
+}
 
 
 # Internationalization

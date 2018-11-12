@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.conf import settings
 from djmoney.models.fields import MoneyField
@@ -52,8 +53,20 @@ class Ticket(FlightMixin):
         (BOOKED, 'Booked'),
         (CONFIRMED, 'Confirmed'),
     )
-
+    booking_reference = models.CharField(max_length=255, blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     flight = models.ForeignKey('flight.Flight', on_delete=models.CASCADE, related_name="tickets")
     status = models.CharField(max_length=50, choices=STATUS, default=RESERVED)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+
+    def save(self, *args, **kwargs):
+        if self.status == Ticket.CONFIRMED:
+            self.booking_reference = self.reference_id_generator()
+        super(Ticket, self).save(*args, **kwargs)
+
+
+
+    def reference_id_generator(self):
+        return uuid.uuid4().hex.upper()[0:6]
+

@@ -1,15 +1,15 @@
-from rest_framework import viewsets
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import exceptions
-from rest_framework.exceptions import ParseError
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
+from rest_framework import exceptions
+from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ParseError
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_jwt.settings import api_settings
-from account.models import User, get_user
+
 from account.api.serializers import (
     CreateAirtechUserSerializer,
     JSONWebTokenSerializer,
@@ -17,6 +17,7 @@ from account.api.serializers import (
     AirtechUserSerializer,
     FileUploadSerializer
 )
+from account.models import User, get_user
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER

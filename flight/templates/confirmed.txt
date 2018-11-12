@@ -1,0 +1,33 @@
+
+Your Booking Reference is {{ ticket_reference }}
+
+Hello {{ name }},
+
+
+Thanks for choosing to book with Airtechng.
+Attached to this mail you will find your E-ticket Itinerary Receipt
+
+
+
+YOUR TICKET INFORMATION
+
+
+Flight Number: {{ flight_number }}
+
+
+From: {{ departure_location }}
+
+
+To: {{ arrival_location }}
+
+
+Arrival Date: {{ arrival_date}}
+
+
+Arrival Time: {{ arrival_time }}
+
+
+Departure Date:{{ departure_date }}
+
+
+Departure Time: {{ departure_time }}

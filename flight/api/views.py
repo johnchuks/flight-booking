@@ -1,13 +1,17 @@
-from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.response import Response
+from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
 
 from flight.api.serializers import FlightSerializer, TicketSerializer
 from flight.models import Flight, Ticket
 from flight.permissions import IsOwner
+from flight.tasks import notify_user_of_confirmed_ticket, notify_user_of_reservation
+from flight.utils import convert_date_to_unix
+
+
 # Create your views here.
 
 class FlightViewSet(viewsets.ModelViewSet):
@@ -18,8 +22,9 @@ class FlightViewSet(viewsets.ModelViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        permission_classes = [IsAuthenticated,]
-        if self.action in ('create', 'destroy', 'update', 'partial_update', 'flight_status'):
+        permission_classes = [IsAuthenticated, ]
+        if self.action in ('create', 'destroy', 'update',
+                           'partial_update', 'flight_status'):
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
@@ -65,9 +70,63 @@ class FlightViewSet(viewsets.ModelViewSet):
             arrival_location=flight.arrival_location
         )
         ticket.save()
-        ## Run celery task to send email to customer of reserved ticket
+        # Run celery task to send email to customer of reserved ticket
+        notify_user_of_reservation.delay(
+            ticket.pk
+        )
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def book(self, request, pk=None):
+        queryset = Flight.objects.all()
+        flight = get_object_or_404(queryset, pk=pk)
+        ticket = Ticket.objects.filter(user=request.user, flight=flight).exclude(
+            status__in=(
+                Ticket.RESERVED
+            ))
+        if ticket.exists():
+            response = dict(
+                message="A ticket has either been booked or confirmed for this flight"
+            )
+            return Response(response, status=400)
+
+        ticket = Ticket.objects.create(
+            user=request.user,
+            flight=flight,
+            arrival_time=flight.arrival_time,
+            arrival_date=flight.arrival_date,
+            departure_time=flight.departure_time,
+            departure_date=flight.departure_date,
+            departure_location=flight.departure_location,
+            arrival_location=flight.arrival_location,
+            status=Ticket.BOOKED
+        )
+        ticket.save()
+        serializer = TicketSerializer(ticket)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'], url_path='reserved/(?P<date>[0-9_-]+)')
+    def reserved(self, request, pk=None, date=None):
+        queryset = Flight.objects.all()
+        flight = get_object_or_404(queryset, pk=pk)
+
+        reserved_tickets = flight.tickets.filter(
+            status=Ticket.CONFIRMED,
+        )
+        date_to_timestamp = convert_date_to_unix(date)
+
+        tickets = [
+            ticket for ticket in reserved_tickets
+            if convert_date_to_unix(ticket.created_at.strftime('%Y-%m-%d')) == date_to_timestamp
+        ]
+
+        serializer = TicketSerializer(tickets, many=True)
+        response = {
+            "reservations": serializer.data,
+            "reservations_count": len(tickets)
+        }
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -75,8 +134,8 @@ class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
 
     def get_permissions(self):
-        permission_classes = [IsAuthenticated,]
-        if self.action in ('create','list'):
+        permission_classes = [IsAuthenticated, ]
+        if self.action in ('create', 'list'):
             permission_classes = [IsAdminUser]
         if self.action in ('retrieve', 'destroy'):
             permission_classes = [IsOwner]
@@ -100,7 +159,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['patch'])
+    @action(detail=True, methods=['post'])
     def purchase(self, request, pk=None):
         current_user = request.user
         queryset = Ticket.objects.all()
@@ -114,9 +173,12 @@ class TicketViewSet(viewsets.ModelViewSet):
             # run code for purchase ticket and send email to customer that ticket has been confirmed
             ticket.status = Ticket.CONFIRMED
             ticket.save()
+            notify_user_of_confirmed_ticket.delay(
+                ticket.pk
+            )
             serializer = TicketSerializer(ticket)
             return Response(serializer.data, status=status.HTTP_200_OK)
-
+        return Response(dict(message="Ticket has been purchased for this flight"), status=400)
 
     def update(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
@@ -141,7 +203,6 @@ class TicketViewSet(viewsets.ModelViewSet):
                 setattr(ticket, key, value)
 
             ticket.save()
-            ## Send email of ticket updated
             serializer = TicketSerializer(ticket)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
