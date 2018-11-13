@@ -31,7 +31,8 @@ class AirtechUserSignup(APIView):
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
-        if email and password:
+        first_name = request.data.get('first_name')
+        if email and password and first_name:
             serializer = CreateAirtechUserSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -49,7 +50,7 @@ class AirtechUserSignup(APIView):
                         'email': serializer.data.get('email')
                     }
                     return Response(response, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(dict(message="email, password and firstname are required"), status=400)
 
 
 class AirtechUserLogin(APIView):
@@ -58,7 +59,6 @@ class AirtechUserLogin(APIView):
     def validate_email_password(self, request, validated_data):
         email = validated_data.get('email')
         password = validated_data.get('password')
-
         if email and password:
             user = authenticate(request, email=email, password=password)
         else:
@@ -84,7 +84,6 @@ class AirtechUserLogin(APIView):
                     'email': serializer.data.get('email')
                 }
                 return Response(response, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         response = dict(message="Invalid request")
         return Response(response, status=400)
 
