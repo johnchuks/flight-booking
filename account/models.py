@@ -18,9 +18,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['first_name', 'password']
 
     
-    def get_full_name(self):
-        return "{} {}".format(self.first_name, self.last_name)
-    
     def save(self, *args, **kwargs):
         if self.email:
             self.email = self.email.lower().strip()
@@ -33,15 +30,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         Is the user an admin
         """
         return self.is_staff
-    
-    def send_email(self, message):
-        pass
 
 
 
 def get_user(pk):
     try:
         user = User.objects.get(pk=pk)
-    except User.DoesNotExist:
+    except User.DoesNotExist: # pragma: no cover
         return ("User does not exist")
     return user

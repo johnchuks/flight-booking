@@ -61,10 +61,9 @@ class AirtechUserLogin(APIView):
         password = validated_data.get('password')
         if email and password:
             user = authenticate(request, email=email, password=password)
-        else:
-            msg = 'Must include an email and password to login'
-            raise exceptions.ValidationError(msg)
-        return user
+            return user
+        msg = 'Must include an email and password to login'
+        raise exceptions.ValidationError(msg)
 
     def post(self, request):
         authenticated_user = self.validate_email_password(request, request.data)
@@ -110,18 +109,26 @@ class AirtechUserViewSet(viewsets.ViewSet):
 
         queryset = User.objects.all()
         user = get_object_or_404(queryset, pk=pk)
-        user.first_name = request.data.get('first_name', user.first_name)
-        user.last_name = request.data.get('last_name', user.last_name)
-        user.save()
-        serializer = AirtechUserSerializer(user)
-        return Response(serializer.data)
+
+        update_set = {'first_name', 'last_name'}
+        request_set = set(request.data.keys())
+
+        if request_set.issubset(update_set):
+            for key, value in request.data.items():
+                setattr(user, key, value)
+            user.save()
+            serializer = AirtechUserSerializer(user)
+            return Response(serializer.data)
+        response = dict(message="Some of the fields provided are not permitted for this action")
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['put'])
-    def upload_photo(self, request):
+    def upload(self, request):
         try:
             file = request.data.get('file')
-        except KeyError:
-            raise ParseError('Empty Content: No file attached')
+        except KeyError: # pragma: no cover
+            print('we here')
+            return ParseError('Empty Content: No file attached')
         user = request.user
         user.profile_photo = file
         user.save()

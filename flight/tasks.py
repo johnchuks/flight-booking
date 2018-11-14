@@ -41,7 +41,7 @@ def notify_user_of_confirmed_ticket(ticket_id):
 def notify_user_of_reservation(ticket_id):
     try:
         reserved_ticket = Ticket.objects.get(pk=ticket_id)
-    except Ticket.DoesNotExist:
+    except Ticket.DoesNotExist: #pragma: no cover
         return
 
     subject = "Your Flight Reservation"

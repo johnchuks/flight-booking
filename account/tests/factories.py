@@ -1,8 +1,10 @@
+import json
+
 import factory
 from django.test import Client
 from django.urls import reverse
+
 from account.models import User
-import json
 
 client = Client()
 
@@ -13,6 +15,7 @@ class UserFactory(factory.DjangoModelFactory):
 
     first_name = factory.Sequence(lambda n: 'User #{0}'.format(n))
     email = factory.Sequence(lambda n: 'person{0}@test.com'.format(n))
+    password = factory.PostGeneration(lambda user, create, extracted: user.set_password(extracted))
 
 
 
