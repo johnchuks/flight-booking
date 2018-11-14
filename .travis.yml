@@ -19,5 +19,5 @@ before_script:
   - psql -c "CREATE DATABASE travisdb;" -U postgres
 
 script:
-  - sh ./scripts/build_dev_team.sh
+  - sh ./build.sh
 
