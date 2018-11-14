@@ -2,7 +2,9 @@ language: python
 python:
   - "3.6.2"
 
-services: postgresql
+services: 
+  - postgresql
+  - redis
 
 env:
   - DJANGO=2.1.3
