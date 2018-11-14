@@ -8,7 +8,7 @@ load_dotenv()
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+SECRET_KEY = os.getenv('SECRET_KEY')
 ## Database config
 DATABASES = {
  'default': {
