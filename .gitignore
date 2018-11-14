@@ -10,3 +10,5 @@ syntax_output
 .idea
 celerybeat.*
 celerybeat-*
+.coverage
+htmlcov

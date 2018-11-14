@@ -1,0 +1,26 @@
+language: python
+python:
+  - "3.6.2"
+
+services: 
+  - postgresql
+  - redis
+
+env:
+  - DJANGO=2.1.3
+before_install:
+  - export DJANGO_SETTINGS_MODULE=config.settings.test
+  - export PYTHONPATH=$HOME/builds/johnchuks/flightbooking
+  - export PIP_USE_MIRRORS=true
+  - export BUILD_ON_TRAVIS=true
+install:
+  - pip install -r requirements.txt
+  - pip install psycopg2 --quiet
+
+before_script:
+  - psql -c "CREATE DATABASE travisdb;" -U postgres
+
+script:
+  - sh ./build.sh
+  - coveralls
+

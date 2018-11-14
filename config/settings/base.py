@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -72,6 +72,11 @@ REST_FRAMEWORK = {
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend', # default
+)
 
 JWT_AUTH = {
     'JWT_ENCODE_HANDLER':
@@ -176,6 +181,9 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute='*')
     }
 }
+CELERY_ALWAYS_EAGER = True
+
+# TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 
 
 # Internationalization
@@ -196,3 +204,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+

@@ -32,7 +32,7 @@ def notify_user_of_confirmed_ticket(ticket_id):
         ticket_reference=confirmed_ticket.booking_reference
     )
     from_email = settings.AIRTECH_MAIL
-    to_email = 'johnboscoohia@gmail.com'
+    to_email = confirmed_ticket.user.email
     ticket_info = get_template('confirmed.txt').render(context)
     send_mail(subject, ticket_info, from_email, [to_email], fail_silently=True)
 
@@ -41,7 +41,8 @@ def notify_user_of_confirmed_ticket(ticket_id):
 def notify_user_of_reservation(ticket_id):
     try:
         reserved_ticket = Ticket.objects.get(pk=ticket_id)
-    except Ticket.DoesNotExist:
+    except Ticket.DoesNotExist: #pragma: no cover
+        print('we here')
         return
 
     subject = "Your Flight Reservation"

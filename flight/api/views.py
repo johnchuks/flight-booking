@@ -170,10 +170,9 @@ class TicketViewSet(viewsets.ModelViewSet):
             return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 
         if ticket.status == Ticket.BOOKED:
-            # run code for purchase ticket and send email to customer that ticket has been confirmed
             ticket.status = Ticket.CONFIRMED
             ticket.save()
-            notify_user_of_confirmed_ticket.delay(
+            result = notify_user_of_confirmed_ticket.delay(
                 ticket.pk
             )
             serializer = TicketSerializer(ticket)
