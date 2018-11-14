@@ -223,7 +223,6 @@ class TestFlightViewSet(APITestCase):
         self.assertEqual(response.status_code, 409)
         self.assertEqual(response.data['message'], 'Ticket already exist for this flight')
 
-
     def test_tickets_confirmed_for_flight_success(self):
         TicketFactory(
             status=Ticket.CONFIRMED,
@@ -242,6 +241,7 @@ class TestFlightViewSet(APITestCase):
         response = view(request, pk=self.flight.pk, date="2018-11-14")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['reservations_count'], 1)
+
 
 
 class TestTicketViewSet(APITestCase):
@@ -382,6 +382,7 @@ class TestTicketViewSet(APITestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['status'], Ticket.CONFIRMED)
+
 
     def test_purchase_ticket_fail_unauthorized(self):
         ticket = TicketFactory(
@@ -544,6 +545,3 @@ class TestTicketViewSet(APITestCase):
         response = view(request, pk=ticket.pk)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['message'], "Some of the fields provided are not permitted for this action")
-
-
-

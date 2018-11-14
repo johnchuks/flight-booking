@@ -181,6 +181,9 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute='*')
     }
 }
+CELERY_ALWAYS_EAGER = True
+
+# TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 
 
 # Internationalization

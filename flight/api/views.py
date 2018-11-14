@@ -172,7 +172,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         if ticket.status == Ticket.BOOKED:
             ticket.status = Ticket.CONFIRMED
             ticket.save()
-            notify_user_of_confirmed_ticket.delay(
+            result = notify_user_of_confirmed_ticket.delay(
                 ticket.pk
             )
             serializer = TicketSerializer(ticket)

@@ -5,3 +5,4 @@ omit =
     account/manager.py
     */wsgi.py
     */tests/*
+    */tasks.py
