@@ -115,10 +115,9 @@ class FlightViewSet(viewsets.ModelViewSet):
             status=Ticket.CONFIRMED,
         )
         date_to_timestamp = convert_date_to_unix(date)
-
         tickets = [
             ticket for ticket in reserved_tickets
-            if convert_date_to_unix(ticket.created_at.strftime('%Y-%m-%d')) == date_to_timestamp
+            if convert_date_to_unix(ticket.confirmed_from.strftime('%Y-%m-%d')) == date_to_timestamp
         ]
 
         serializer = TicketSerializer(tickets, many=True)
@@ -172,7 +171,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         if ticket.status == Ticket.BOOKED:
             ticket.status = Ticket.CONFIRMED
             ticket.save()
-            result = notify_user_of_confirmed_ticket.delay(
+            notify_user_of_confirmed_ticket.delay(
                 ticket.pk
             )
             serializer = TicketSerializer(ticket)

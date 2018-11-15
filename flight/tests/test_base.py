@@ -1,3 +1,4 @@
+import datetime
 from django.urls import reverse
 from rest_framework.test import APITestCase, APIRequestFactory
 from account.tests.factories import login_user, UserFactory
@@ -224,12 +225,14 @@ class TestFlightViewSet(APITestCase):
         self.assertEqual(response.data['message'], 'Ticket already exist for this flight')
 
     def test_tickets_confirmed_for_flight_success(self):
+        now = datetime.datetime.now()
+        date = now.strftime('%Y-%m-%d')
         TicketFactory(
             status=Ticket.CONFIRMED,
             flight=self.flight,
-            user=self.user
+            user=self.user,
         )
-        url = reverse('flights-reserved', args=(self.flight.pk, "2018-11-14"))
+        url = reverse('flights-reserved', args=(self.flight.pk, date))
         view = FlightViewSet.as_view(
             actions={
                 'post': 'reserved'
@@ -238,7 +241,7 @@ class TestFlightViewSet(APITestCase):
         request = self.factory.post(url, HTTP_AUTHORIZATION='JWT {}'.format(
             self.admin_token))
 
-        response = view(request, pk=self.flight.pk, date="2018-11-14")
+        response = view(request, pk=self.flight.pk, date=date)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['reservations_count'], 1)
 
