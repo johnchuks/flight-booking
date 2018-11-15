@@ -1,7 +1,7 @@
 # Airtech Flight booking
 
 [![Build Status](https://travis-ci.org/johnchuks/flight-booking.svg?branch=develop)](https://travis-ci.org/johnchuks/flight-booking)
-[![Coverage Status](https://coveralls.io/repos/github/johnchuks/flight-booking/badge.svg?branch=master)](https://coveralls.io/github/johnchuks/flight-booking?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/johnchuks/flight-booking/badge.svg?branch=develop)](https://coveralls.io/github/johnchuks/flight-booking?branch=develop)
 
 
 ## Introduction
@@ -17,8 +17,8 @@ Airtech Flight booking releases a REST API that enables users to book, purchase,
 
 ## Project Setup
 Setting up this project on your local machine is fairly simple and it is done with the following steps
-To start the installation ensure you have `virtualenv` on your local machine. `virtualenv` is recommended for setting your `dev` environment for this application.
-
+- Ensure you have `Redis` and `PostgreSQL` installed on your machine. For Mac users you can download it using `brew install redis`
+- Start the redis server like so `redis-server`. Redis is utilized as a message broker for the celery tasks
 - Run `chmod +x ./setup.sh` to make the script executable.
 - Run `source setup.sh` to setup your development environment.
 - create a `.env` file following the sample given in the repo
