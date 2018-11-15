@@ -9,7 +9,7 @@ Airtech Flight booking releases a REST API that enables users to book, purchase,
 
 
 
-## Techologies Utilized
+## Technologies Utilized For The Project
 - Python (Django)
 - Celery (task management system)
 - Redis (Message broker and caching)
