@@ -25,7 +25,9 @@ Setting up this project on your local machine is fairly simple and it is done wi
 - Ensure to add ```DB_NAME=flight-booking```, `DB_USER=YOUR POSTGRES USER`, `DB_PASSWORD=YOUR POSTGRES PASSWORD`and `DB_PORT=5432` or any other port depending on your local machine.
 - Ensure you have a `SECRET_KEY` and `JWT_SECRET_KEY` in your env.
 - To install the dependencies, simply run `pip install -r requirements.txt`
-- Finally you can run `./manage.py runserver 0.0.0.0:8000` to start the server in port 8000.
+- Run `./manage.py runserver 0.0.0.0:8000` to start the local development server in port 8000.
+- Ensure `Redis` is running before starting `Celery`. To start a celery worker, run `celery -A config worker -l info`. Celery was utilized to handle background jobs for the application.
+- Finally run celery beat like so `celery -A config beat`. Celery beat was utilized to handle periodic tasks such as sending automatic email to travellers.
 
 
 ## Testing
