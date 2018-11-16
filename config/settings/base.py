@@ -178,12 +178,11 @@ CELERY_TIMEZONE = 'Africa/Lagos'
 CELERY_BEAT_SCHEDULE = {
     'send-email-reminder': {
         'task': 'flight.tasks.send_reminder_to_travellers',
-        'schedule': crontab(minute='*')
+        'schedule': crontab(hour=1, minute=0)
     }
 }
 CELERY_ALWAYS_EAGER = True
 
-# TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 
 
 # Internationalization
