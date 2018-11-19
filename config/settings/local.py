@@ -6,6 +6,8 @@ load_dotenv()
 
 # DEBUG config
 
+ALLOWED_HOSTS = ['*']
+
 DEBUG = True
 
 SECRET_KEY = os.getenv('SECRET_KEY')
