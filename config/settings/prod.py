@@ -13,7 +13,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 ## Database config
 DATABASES = {
- 'default': parse(os.getenv('PROD_DB_URL'))
+ 'default': parse(os.getenv('DATABASE_URL'))
 }
 
 DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
