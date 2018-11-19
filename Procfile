@@ -1,2 +1,2 @@
 web: gunicorn config.wsgi --log-file -
-worker: celery -A TASKFILE worker -B --loglevel=info
+worker: celery worker -A config --loglevel=info
