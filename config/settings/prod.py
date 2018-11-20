@@ -1,4 +1,4 @@
-from .base import *
+from config.settings.base import *
 from dj_database_url import config, parse
 from dotenv import load_dotenv
 
