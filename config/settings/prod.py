@@ -19,7 +19,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
 DATABASES = {}
 DATABASES['default'] = config(
-    default=os.getenv('DATABASE_URL')
+    default=os.getenv('DATABASE_URL'), conn_max_age=600, ssl_require=True
 )
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
