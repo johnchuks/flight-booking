@@ -33,4 +33,7 @@ Setting up this project on your local machine is fairly simple and it is done wi
 ## Testing
 The API is well tested and it adhered to best practices for testing django applications. The API can be tested by simply running the `pytest` command or `python manage.py test` command.
 
+## Live Mode
+Heroku services was utilized for the deployment of the application. [Link to the API](https://airtechflightbooking.herokuapp.com/api/v1/)
+
 
