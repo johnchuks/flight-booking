@@ -2,6 +2,10 @@
 import os
 import sys
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 if os.getenv('ENV') == 'PRODUCTION':
     settings = "config.settings.prod"
 else:
