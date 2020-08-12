@@ -10,7 +10,7 @@ celery==4.4.7
 redis==3.4.0
 django-celery-beat==1.2.0
 coveralls==1.5.1
-coverage==4.5.2
+coverage==5.2.1
 pytest-django==3.4.3
 factory-boy==2.11.1
 dj-database-url==0.5.0
